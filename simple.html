@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="css/style.css">
+<title>Chatアプリ</title>
+</head>
+<body>
+
+<!-- コンテンツ表示画面 -->
+<!-- div>div*3 -->
+<div>
+    <div>
+        名前: <input type="text" id="uname">
+    </div>
+    <div>
+        <textarea name="" id="text" cols="30" rows="10"></textarea>
+       
+    </div>
+    <div>
+        <div style="height:300px;overflow:auto;"  id="output"></div>
+    </div>
+</div>
+
+
+
+<!--/ コンテンツ表示画面 -->
+
+
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- JQuery -->
+
+
+<!--** 以下Firebase **-->
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved }
+        from "https://cdnjs.cloudflare.com/ajax/libs/firebase/9.6.0/firebase-database.min.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      
+      authDomain: "gsapp-488bc.firebaseapp.com",
+      projectId: "gsapp-488bc",
+      storageBucket: "gsapp-488bc.appspot.com",
+      messagingSenderId: "207226626720",
+      appId: "1:207226626720:web:37b6cea1f1cd78020d1fc5"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    // データベースを使いたい、chatという名前のデータベースを参照
+    const db=getDatabase(app);
+    const dbRef=ref(db, "chat");
+
+
+// jqueryでデータ取得
+    $("#text").on("keydown", function(e){
+        if(e.keyCode===13){
+        const uname=$("#uname").val();
+        const text=$("#text").val();
+        // オブジェクト指定
+        const msg={
+            uname: uname,
+            text: text
+        };
+        
+        // データを送る
+        const newPostRef=push(dbRef);
+        set(newPostRef,msg);
+
+    }
+    });
+
+
+
+
+
+
+// データ更新されたら走る
+onChildAdded(dbRef, function (data) {
+        const msg = data.val();
+        const key = data.key;
+        let h = "<div class='message' >";
+        h += msg.uname;
+        h += "<br>";
+        h += msg.text;
+        h += "<button class='remove' id='";
+        h += key;
+        h += "'>&#x1f5d1</button>";
+        h += "</div>";
+        $("#output").append(h); // #output の最後に追加
+    });
+
+
+$(document).on("click",".remove",function(){
+    remove(ref(db, "chat/" +$(this).attr("id")));
+$(this).parent().remove();
+});
+
+
+
+
+
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
